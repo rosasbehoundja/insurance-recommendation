@@ -10,7 +10,9 @@ Ce projet utilise des techniques de classification multi-label pour prédire la 
 
 ```
 insurance-recommendation/
+├── app.py                      # Application web Flask
 ├── main.py                     # Point d'entrée principal du projet
+├── retrain.py                  # Script de réentraînement automatique
 ├── pyproject.toml              # Configuration du projet et dépendances
 ├── README.md                   # Documentation du projet
 ├── data/
@@ -28,6 +30,11 @@ insurance-recommendation/
 │   ├── preprocessing.py        # Prétraitement des données
 │   ├── training.py             # Entraînement des modèles
 │   └── predict.py              # Pipeline de prédiction
+├── templates/
+│   ├── index.html              # Page principale de prédiction
+│   ├── result.html             # Page de résultats
+│   ├── error.html              # Page d'erreur
+│   └── retrain.html            # Page de réentraînement
 └── weights/
     ├── catboost.pkl            # Modèle CatBoost entraîné
     ├── xgboost.pkl             # Modèle XGBoost entraîné
@@ -73,7 +80,7 @@ Le modèle **XGBoost** obtient les meilleures performances globales.
 
 ```bash
 # Cloner le repository
-git clone <repository-url>
+git clone https://github.com/rosasbehoundja/insurance-recommendation.git
 cd insurance-recommendation
 
 # Installer les dépendances avec uv
@@ -84,7 +91,7 @@ uv sync
 
 ```bash
 # Cloner le repository
-git clone <repository-url>
+git clone https://github.com/rosasbehoundja/insurance-recommendation.git
 cd insurance-recommendation
 
 # Créer un environnement virtuel
@@ -138,6 +145,84 @@ predictions = predict(df_test, model_name="xgboost", weights_dir="weights")
 create_submission(df_test['ID'], predictions, "submission.csv")
 ```
 
+## Application Web
+
+L'application web Flask permet de faire des prédictions via une interface utilisateur et de gérer le réentraînement des modèles.
+
+### Lancement
+
+```bash
+python app.py
+```
+
+L'application est accessible sur `http://localhost:5000`.
+
+### Pages disponibles
+
+| Route | Description |
+|-------|-------------|
+| `/` | Page principale de prédiction |
+| `/retrain` | Interface de réentraînement des modèles |
+
+### API REST
+
+| Endpoint | Méthode | Description |
+|----------|---------|-------------|
+| `/api/predict` | POST | Faire une prédiction |
+| `/api/retrain` | POST | Lancer un réentraînement |
+| `/api/retrain/schedule` | POST | Programmer un réentraînement périodique |
+| `/api/retrain/schedule` | DELETE | Arrêter la programmation |
+| `/api/retrain/status` | GET | Vérifier le statut de la programmation |
+
+## Réentraînement Automatique
+
+Le script `retrain.py` permet de réentraîner les modèles automatiquement.
+
+### Ligne de commande
+
+```bash
+# Réentraîner tous les modèles une fois
+python retrain.py
+
+# Réentraîner un modèle spécifique
+python retrain.py --model xgboost
+python retrain.py --model deep_learning
+
+# Réentraînement programmé (toutes les heures)
+python retrain.py --schedule 3600
+
+# Réentraînement programmé (tous les jours)
+python retrain.py --schedule 86400
+```
+
+### Via l'interface web
+
+1. Accéder à `http://localhost:5000/retrain`
+2. Choisir le modèle et lancer le réentraînement manuel
+3. Ou configurer un réentraînement programmé avec l'intervalle souhaité
+
+### Utilisation programmatique
+
+```python
+from retrain import retrain_models, run_scheduled
+import threading
+
+# Réentraînement simple
+success = retrain_models(model="all")
+
+# Réentraînement programmé avec arrêt possible
+stop_event = threading.Event()
+thread = threading.Thread(
+    target=run_scheduled,
+    args=(3600, "all", stop_event),
+    daemon=True
+)
+thread.start()
+
+# Pour arrêter
+stop_event.set()
+```
+
 ## Pipeline de Traitement
 
 ### 1. Prétraitement (`scripts/preprocessing.py`)
@@ -165,6 +250,7 @@ create_submission(df_test['ID'], predictions, "submission.csv")
 
 ```toml
 dependencies = [
+    "flask>=3.0.0",
     "matplotlib>=3.10.8",
     "numpy>=2.4.1",
     "pandas>=2.3.3",
