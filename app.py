@@ -1,10 +1,15 @@
 import pickle
+import threading
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import numpy as np
 
 from scripts.preprocessing import preprocess, PRODUCT_COLUMNS, CATEGORICAL_COLUMNS, NUMERICAL_COLUMNS
+from retrain import retrain_models, run_scheduled
+
+scheduled_thread = None
+stop_scheduled = threading.Event()
 
 try:
     import tensorflow as tf
@@ -266,6 +271,116 @@ def api_predict():
             'success': False,
             'error': str(e)
         }), 400
+
+
+@app.route('/retrain')
+def retrain_page():
+    """Render the retraining management page."""
+    return render_template('retrain.html')
+
+
+@app.route('/api/retrain', methods=['POST'])
+def api_retrain():
+    """API endpoint to trigger model retraining."""
+    try:
+        data = request.get_json() or {}
+        model = data.get('model', 'all')
+
+        success = retrain_models(model=model)
+
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Réentraînement terminé avec succès',
+                'model': model
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Le réentraînement a échoué'
+            }), 500
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/retrain/schedule', methods=['POST'])
+def api_schedule_retrain():
+    """API endpoint to start scheduled retraining."""
+    global scheduled_thread, stop_scheduled
+
+    try:
+        data = request.get_json() or {}
+        model = data.get('model', 'all')
+        interval = int(data.get('interval', 3600))
+
+        if scheduled_thread and scheduled_thread.is_alive():
+            return jsonify({
+                'success': False,
+                'error': 'Une programmation est déjà active'
+            }), 400
+
+        stop_scheduled.clear()
+        scheduled_thread = threading.Thread(
+            target=run_scheduled,
+            args=(interval, model, stop_scheduled),
+            daemon=True
+        )
+        scheduled_thread.start()
+
+        return jsonify({
+            'success': True,
+            'message': 'Programmation démarrée',
+            'model': model,
+            'interval': interval
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/retrain/schedule', methods=['DELETE'])
+def api_stop_schedule():
+    """API endpoint to stop scheduled retraining."""
+    global scheduled_thread, stop_scheduled
+
+    try:
+        if not scheduled_thread or not scheduled_thread.is_alive():
+            return jsonify({
+                'success': False,
+                'error': 'Aucune programmation active'
+            }), 400
+
+        stop_scheduled.set()
+
+        return jsonify({
+            'success': True,
+            'message': 'Programmation arrêtée'
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/retrain/status', methods=['GET'])
+def api_retrain_status():
+    """API endpoint to get scheduled retraining status."""
+    global scheduled_thread
+
+    is_running = scheduled_thread and scheduled_thread.is_alive()
+
+    return jsonify({
+        'scheduled': is_running
+    })
 
 
 if __name__ == '__main__':

@@ -1,13 +1,7 @@
 import argparse
-import sys
-from pathlib import Path
-
 import pandas as pd
 
-# Add scripts directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-
-from scripts.preprocessing import preprocess, PRODUCT_COLUMNS
+from scripts.preprocessing import preprocess
 from scripts.predict import predict, create_submission
 
 
