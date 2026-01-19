@@ -3,465 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insurance Recommendation - Prédiction de Produits</title>
+    <title>Recommandation d'assurance</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             padding: 40px 0;
+            color: #333;
+        }
+        .container-main {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: #666;
+            font-size: 0.95rem;
         }
         .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 25px;
+        .form-section {
+            padding: 24px;
+            border-bottom: 1px solid #f0f0f0;
         }
-        .card-header h2 {
-            margin: 0;
-            font-weight: 600;
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 16px;
         }
         .form-label {
+            font-size: 0.85rem;
             font-weight: 500;
-            color: #495057;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 12px 40px;
-            font-size: 1.1rem;
-            border-radius: 25px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            color: #555;
+            margin-bottom: 6px;
         }
         .form-select, .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            transition: border-color 0.3s;
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
         }
         .form-select:focus, .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-        .model-selector {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
         }
         .model-option {
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            background: #fff;
         }
         .model-option:hover {
-            border-color: #667eea;
+            border-color: #22c55e;
         }
         .model-option.selected {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .form-check-input:checked {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+        .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }
+        .model-label {
+            margin-left: 12px;
+        }
+        .model-label strong {
+            display: block;
+            font-size: 0.9rem;
+            color: #1a1a1a;
+        }
+        .model-label small {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        .btn-submit {
+            background: #22c55e;
+            border: none;
+            padding: 14px 32px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 8px;
+            color: white;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover {
+            background: #16a34a;
+            color: white;
         }
         .select2-container--default .select2-selection--single {
-            border-radius: 10px;
-            padding: 8px 15px;
+            border-radius: 8px;
+            padding: 6px 10px;
             height: auto;
-            border: 2px solid #e9ecef;
+            border: 1px solid #ddd;
         }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 24px;
+            font-size: 0.9rem;
         }
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 44px;
+            height: 40px;
+        }
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #22c55e;
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            color: #999;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h2>🛡️ Insurance Recommendation</h2>
-                        <p class="mb-0 mt-2 opacity-75">Prédiction de produits d'assurance personnalisés</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <form action="/predict" method="POST" id="predictionForm">
-                            <!-- Model Selection -->
-                            <div class="model-selector">
-                                <h5 class="mb-3"><i class="bi bi-cpu"></i> Choisir le modèle de prédiction</h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="model" id="xgboost" value="xgboost" checked>
-                                            <label class="form-check-label" for="xgboost">
-                                                <strong>🚀 XGBoost</strong><br>
-                                                <small class="text-muted">Modèle rapide et performant</small>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="model" id="deep_learning" value="deep_learning">
-                                            <label class="form-check-label" for="deep_learning">
-                                                <strong>🧠 Deep Learning</strong><br>
-                                                <small class="text-muted">Réseau de neurones avancé</small>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr class="my-4">
-
-                            <!-- User Information -->
-                            <h5 class="mb-3">📋 Informations Client</h5>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="id" class="form-label">ID Client</label>
-                                    <input type="text" class="form-control" id="id" name="id" value="USER001" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="join_date" class="form-label">Date d'adhésion</label>
-                                    <input type="date" class="form-control" id="join_date" name="join_date" required>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="sex" class="form-label">Sexe</label>
-                                    <select class="form-select" id="sex" name="sex" required>
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="F">Féminin (F)</option>
-                                        <option value="M">Masculin (M)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="marital_status" class="form-label">Statut Marital</label>
-                                    <select class="form-select" id="marital_status" name="marital_status" required>
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="D">Divorcé(e) (D)</option>
-                                        <option value="M">Marié(e) (M)</option>
-                                        <option value="P">Pacsé(e) (P)</option>
-                                        <option value="R">Relation (R)</option>
-                                        <option value="S">Célibataire (S)</option>
-                                        <option value="U">Inconnu (U)</option>
-                                        <option value="W">Veuf/Veuve (W)</option>
-                                        <option value="f">Fiancé(e) (f)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="birth_year" class="form-label">Année de naissance</label>
-                                    <input type="number" class="form-control" id="birth_year" name="birth_year" min="1920" max="2010" placeholder="ex: 1990" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="branch_code" class="form-label">Code Agence</label>
-                                    <select class="form-select searchable" id="branch_code" name="branch_code" required>
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="1X1H">1X1H</option>
-                                        <option value="30H5">30H5</option>
-                                        <option value="49BM">49BM</option>
-                                        <option value="748L">748L</option>
-                                        <option value="94KC">94KC</option>
-                                        <option value="9F9T">9F9T</option>
-                                        <option value="BOAS">BOAS</option>
-                                        <option value="E5SW">E5SW</option>
-                                        <option value="EU3L">EU3L</option>
-                                        <option value="O4JC">O4JC</option>
-                                        <option value="O67J">O67J</option>
-                                        <option value="UAOD">UAOD</option>
-                                        <option value="X23B">X23B</option>
-                                        <option value="XX25">XX25</option>
-                                        <option value="ZFER">ZFER</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="occupation_code" class="form-label">Code Profession</label>
-                                    <select class="form-select searchable" id="occupation_code" name="occupation_code" required>
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="00MO">00MO</option>
-                                        <option value="0B60">0B60</option>
-                                        <option value="0KID">0KID</option>
-                                        <option value="0OJM">0OJM</option>
-                                        <option value="0PO7">0PO7</option>
-                                        <option value="0S50">0S50</option>
-                                        <option value="0SH6">0SH6</option>
-                                        <option value="0VYC">0VYC</option>
-                                        <option value="1AN5">1AN5</option>
-                                        <option value="1DT6">1DT6</option>
-                                        <option value="1H8Y">1H8Y</option>
-                                        <option value="1MB4">1MB4</option>
-                                        <option value="1MSV">1MSV</option>
-                                        <option value="1NFK">1NFK</option>
-                                        <option value="1YKL">1YKL</option>
-                                        <option value="2346">2346</option>
-                                        <option value="2686">2686</option>
-                                        <option value="2A7I">2A7I</option>
-                                        <option value="2BE6">2BE6</option>
-                                        <option value="2G86">2G86</option>
-                                        <option value="2HLT">2HLT</option>
-                                        <option value="2JHV">2JHV</option>
-                                        <option value="2MBB">2MBB</option>
-                                        <option value="2R78">2R78</option>
-                                        <option value="2US6">2US6</option>
-                                        <option value="2XZ1">2XZ1</option>
-                                        <option value="2YAO">2YAO</option>
-                                        <option value="31GG">31GG</option>
-                                        <option value="31JW">31JW</option>
-                                        <option value="374O">374O</option>
-                                        <option value="3NHZ">3NHZ</option>
-                                        <option value="3X46">3X46</option>
-                                        <option value="3YQ1">3YQ1</option>
-                                        <option value="44SU">44SU</option>
-                                        <option value="4M0E">4M0E</option>
-                                        <option value="4W0D">4W0D</option>
-                                        <option value="59QM">59QM</option>
-                                        <option value="5FPK">5FPK</option>
-                                        <option value="5JRZ">5JRZ</option>
-                                        <option value="5LNN">5LNN</option>
-                                        <option value="5OVC">5OVC</option>
-                                        <option value="6E4H">6E4H</option>
-                                        <option value="6KYM">6KYM</option>
-                                        <option value="6LKA">6LKA</option>
-                                        <option value="6PE7">6PE7</option>
-                                        <option value="6SKY">6SKY</option>
-                                        <option value="6XXU">6XXU</option>
-                                        <option value="6YZA">6YZA</option>
-                                        <option value="734F">734F</option>
-                                        <option value="738L">738L</option>
-                                        <option value="73AC">73AC</option>
-                                        <option value="74BF">74BF</option>
-                                        <option value="7G9M">7G9M</option>
-                                        <option value="7KM4">7KM4</option>
-                                        <option value="7UDQ">7UDQ</option>
-                                        <option value="7UHW">7UHW</option>
-                                        <option value="7UWC">7UWC</option>
-                                        <option value="820B">820B</option>
-                                        <option value="834U">834U</option>
-                                        <option value="8HRZ">8HRZ</option>
-                                        <option value="8Y24">8Y24</option>
-                                        <option value="9B5B">9B5B</option>
-                                        <option value="9FA1">9FA1</option>
-                                        <option value="9HD1">9HD1</option>
-                                        <option value="9IM8">9IM8</option>
-                                        <option value="9IP9">9IP9</option>
-                                        <option value="A4ZC">A4ZC</option>
-                                        <option value="A793">A793</option>
-                                        <option value="AIDS">AIDS</option>
-                                        <option value="AIIN">AIIN</option>
-                                        <option value="APO0">APO0</option>
-                                        <option value="AQIB">AQIB</option>
-                                        <option value="B3QW">B3QW</option>
-                                        <option value="B8W8">B8W8</option>
-                                        <option value="BER4">BER4</option>
-                                        <option value="BFD1">BFD1</option>
-                                        <option value="BP09">BP09</option>
-                                        <option value="BPSA">BPSA</option>
-                                        <option value="BWBW">BWBW</option>
-                                        <option value="BX9E">BX9E</option>
-                                        <option value="C1E3">C1E3</option>
-                                        <option value="C8F6">C8F6</option>
-                                        <option value="CAAV">CAAV</option>
-                                        <option value="CEL6">CEL6</option>
-                                        <option value="CV2C">CV2C</option>
-                                        <option value="CYDC">CYDC</option>
-                                        <option value="DD8W">DD8W</option>
-                                        <option value="DE5D">DE5D</option>
-                                        <option value="DHSN">DHSN</option>
-                                        <option value="DPRV">DPRV</option>
-                                        <option value="DZRV">DZRV</option>
-                                        <option value="E39I">E39I</option>
-                                        <option value="E5PF">E5PF</option>
-                                        <option value="EE5R">EE5R</option>
-                                        <option value="F35Z">F35Z</option>
-                                        <option value="F57O">F57O</option>
-                                        <option value="FJBW">FJBW</option>
-                                        <option value="FLNZ">FLNZ</option>
-                                        <option value="FLXH">FLXH</option>
-                                        <option value="FSWO">FSWO</option>
-                                        <option value="FSXG">FSXG</option>
-                                        <option value="GQ0N">GQ0N</option>
-                                        <option value="GVZ1">GVZ1</option>
-                                        <option value="GWEP">GWEP</option>
-                                        <option value="GZA8">GZA8</option>
-                                        <option value="H1K7">H1K7</option>
-                                        <option value="HAXM">HAXM</option>
-                                        <option value="HJF4">HJF4</option>
-                                        <option value="HSVE">HSVE</option>
-                                        <option value="HTQS">HTQS</option>
-                                        <option value="I2OD">I2OD</option>
-                                        <option value="I31I">I31I</option>
-                                        <option value="IE90">IE90</option>
-                                        <option value="IJ01">IJ01</option>
-                                        <option value="IMHI">IMHI</option>
-                                        <option value="INEJ">INEJ</option>
-                                        <option value="IQFS">IQFS</option>
-                                        <option value="IUT9">IUT9</option>
-                                        <option value="IX8T">IX8T</option>
-                                        <option value="IZ77">IZ77</option>
-                                        <option value="J9SY">J9SY</option>
-                                        <option value="JHU5">JHU5</option>
-                                        <option value="JI64">JI64</option>
-                                        <option value="JN20">JN20</option>
-                                        <option value="JQH3">JQH3</option>
-                                        <option value="JS7M">JS7M</option>
-                                        <option value="JSAX">JSAX</option>
-                                        <option value="JUIP">JUIP</option>
-                                        <option value="K0DL">K0DL</option>
-                                        <option value="K5GV">K5GV</option>
-                                        <option value="K5LB">K5LB</option>
-                                        <option value="KBWO">KBWO</option>
-                                        <option value="KNVN">KNVN</option>
-                                        <option value="KPG9">KPG9</option>
-                                        <option value="KUPK">KUPK</option>
-                                        <option value="L1P3">L1P3</option>
-                                        <option value="L4PL">L4PL</option>
-                                        <option value="LAYD">LAYD</option>
-                                        <option value="LGTN">LGTN</option>
-                                        <option value="LLLH">LLLH</option>
-                                        <option value="LQ0W">LQ0W</option>
-                                        <option value="M0WG">M0WG</option>
-                                        <option value="MEFQ">MEFQ</option>
-                                        <option value="MU16">MU16</option>
-                                        <option value="N2ZZ">N2ZZ</option>
-                                        <option value="N7K2">N7K2</option>
-                                        <option value="NDL9">NDL9</option>
-                                        <option value="NFJH">NFJH</option>
-                                        <option value="NO3L">NO3L</option>
-                                        <option value="NQW1">NQW1</option>
-                                        <option value="NSJX">NSJX</option>
-                                        <option value="NX5Y">NX5Y</option>
-                                        <option value="OEH6">OEH6</option>
-                                        <option value="OME4">OME4</option>
-                                        <option value="ONY7">ONY7</option>
-                                        <option value="OPVX">OPVX</option>
-                                        <option value="OQMY">OQMY</option>
-                                        <option value="OYQF">OYQF</option>
-                                        <option value="P2K2">P2K2</option>
-                                        <option value="P4MD">P4MD</option>
-                                        <option value="PJR4">PJR4</option>
-                                        <option value="PKW3">PKW3</option>
-                                        <option value="PMAI">PMAI</option>
-                                        <option value="PPNK">PPNK</option>
-                                        <option value="PSUY">PSUY</option>
-                                        <option value="PWCW">PWCW</option>
-                                        <option value="Q0LY">Q0LY</option>
-                                        <option value="Q231">Q231</option>
-                                        <option value="Q2L0">Q2L0</option>
-                                        <option value="Q57T">Q57T</option>
-                                        <option value="Q6J6">Q6J6</option>
-                                        <option value="QJID">QJID</option>
-                                        <option value="QQUP">QQUP</option>
-                                        <option value="QQVA">QQVA</option>
-                                        <option value="QS0L">QS0L</option>
-                                        <option value="QX54">QX54</option>
-                                        <option value="QZYX">QZYX</option>
-                                        <option value="R44Q">R44Q</option>
-                                        <option value="R7GL">R7GL</option>
-                                        <option value="RE69">RE69</option>
-                                        <option value="RF6M">RF6M</option>
-                                        <option value="RH2K">RH2K</option>
-                                        <option value="RM3L">RM3L</option>
-                                        <option value="RSN9">RSN9</option>
-                                        <option value="RUFT">RUFT</option>
-                                        <option value="RXV3">RXV3</option>
-                                        <option value="RY9B">RY9B</option>
-                                        <option value="S96O">S96O</option>
-                                        <option value="S9KU">S9KU</option>
-                                        <option value="SF1X">SF1X</option>
-                                        <option value="SS6D">SS6D</option>
-                                        <option value="SST3">SST3</option>
-                                        <option value="SSTX">SSTX</option>
-                                        <option value="T6AB">T6AB</option>
-                                        <option value="TUN1">TUN1</option>
-                                        <option value="U37O">U37O</option>
-                                        <option value="U9RX">U9RX</option>
-                                        <option value="UBBX">UBBX</option>
-                                        <option value="UC7E">UC7E</option>
-                                        <option value="UJ5T">UJ5T</option>
-                                        <option value="URYD">URYD</option>
-                                        <option value="UYDZ">UYDZ</option>
-                                        <option value="V4XX">V4XX</option>
-                                        <option value="VREH">VREH</option>
-                                        <option value="VVTC">VVTC</option>
-                                        <option value="VYSA">VYSA</option>
-                                        <option value="VZN9">VZN9</option>
-                                        <option value="W1X2">W1X2</option>
-                                        <option value="W3Y9">W3Y9</option>
-                                        <option value="W3ZV">W3ZV</option>
-                                        <option value="WE0G">WE0G</option>
-                                        <option value="WE7U">WE7U</option>
-                                        <option value="WIWP">WIWP</option>
-                                        <option value="WMTK">WMTK</option>
-                                        <option value="WSID">WSID</option>
-                                        <option value="WSRG">WSRG</option>
-                                        <option value="WV7U">WV7U</option>
-                                        <option value="WVQF">WVQF</option>
-                                        <option value="X1JO">X1JO</option>
-                                        <option value="XC1N">XC1N</option>
-                                        <option value="XHJD">XHJD</option>
-                                        <option value="XVMH">XVMH</option>
-                                        <option value="Y1WG">Y1WG</option>
-                                        <option value="Y7G1">Y7G1</option>
-                                        <option value="YJXM">YJXM</option>
-                                        <option value="YMGT">YMGT</option>
-                                        <option value="YX47">YX47</option>
-                                        <option value="Z7PM">Z7PM</option>
-                                        <option value="ZA1S">ZA1S</option>
-                                        <option value="ZCQR">ZCQR</option>
-                                        <option value="ZHC2">ZHC2</option>
-                                        <option value="ZKQ3">ZKQ3</option>
-                                        <option value="ZWPL">ZWPL</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="occupation_category_code" class="form-label">Catégorie Profession</label>
-                                    <select class="form-select" id="occupation_category_code" name="occupation_category_code" required>
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="56SI">56SI</option>
-                                        <option value="90QI">90QI</option>
-                                        <option value="AHH5">AHH5</option>
-                                        <option value="JD7X">JD7X</option>
-                                        <option value="L44T">L44T</option>
-                                        <option value="T4MS">T4MS</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    Obtenir les Recommandations
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="text-center mt-4">
-                    <small class="text-white opacity-75">
-                        Insurance Recommendation System - Powered by Machine Learning
-                    </small>
-                </div>
-            </div>
+    <div class="container container-main">
+        <div class="page-header">
+            <h1>Recommandation d'assurance</h1>
+            <p>Trouvez les produits d'assurance adaptés à votre profil</p>
         </div>
+
+        <div class="card">
+            <form action="/predict" method="POST" id="predictionForm">
+                <!-- Choix du modèle -->
+                <div class="form-section">
+                    <div class="section-title">Modèle de prédiction</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="model-option selected" for="xgboost">
+                                <input class="form-check-input" type="radio" name="model" id="xgboost" value="xgboost" checked>
+                                <div class="model-label">
+                                    <strong>XGBoost</strong>
+                                    <small>rapide et performant</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="model-option" for="deep_learning">
+                                <input class="form-check-input" type="radio" name="model" id="deep_learning" value="deep_learning">
+                                <div class="model-label">
+                                    <strong>Deep learning</strong>
+                                    <small>réseau de neurones</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations client -->
+                <div class="form-section">
+                    <div class="section-title">Informations client</div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="id" class="form-label">Identifiant client</label>
+                            <input type="text" class="form-control" id="id" name="id" value="USER001" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="join_date" class="form-label">Date d'adhésion</label>
+                            <input type="date" class="form-control" id="join_date" name="join_date" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="sex" class="form-label">Sexe</label>
+                            <select class="form-select" id="sex" name="sex" required>
+                                <option value="">Sélectionner</option>
+                                <option value="F">Féminin</option>
+                                <option value="M">Masculin</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="marital_status" class="form-label">Statut marital</label>
+                            <select class="form-select" id="marital_status" name="marital_status" required>
+                                <option value="">Sélectionner</option>
+                                <option value="D">Divorcé(e)</option>
+                                <option value="M">Marié(e)</option>
+                                <option value="P">Pacsé(e)</option>
+                                <option value="R">En relation</option>
+                                <option value="S">Célibataire</option>
+                                <option value="U">Non renseigné</option>
+                                <option value="W">Veuf/veuve</option>
+                                <option value="f">Fiancé(e)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="birth_year" class="form-label">Année de naissance</label>
+                            <input type="number" class="form-control" id="birth_year" name="birth_year" min="1920" max="2010" placeholder="ex : 1990" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="branch_code" class="form-label">Code agence</label>
+                            <select class="form-select searchable" id="branch_code" name="branch_code" required>
+                                <option value="">Sélectionner</option>
+                                <option value="1X1H">1X1H</option>
+                                <option value="30H5">30H5</option>
+                                <option value="49BM">49BM</option>
+                                <option value="748L">748L</option>
+                                <option value="94KC">94KC</option>
+                                <option value="9F9T">9F9T</option>
+                                <option value="BOAS">BOAS</option>
+                                <option value="E5SW">E5SW</option>
+                                <option value="EU3L">EU3L</option>
+                                <option value="O4JC">O4JC</option>
+                                <option value="O67J">O67J</option>
+                                <option value="UAOD">UAOD</option>
+                                <option value="X23B">X23B</option>
+                                <option value="XX25">XX25</option>
+                                <option value="ZFER">ZFER</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="occupation_code" class="form-label">Code profession</label>
+                            <select class="form-select searchable" id="occupation_code" name="occupation_code" required>
+                                <option value="">Sélectionner</option>
+                                <option value="00MO">00MO</option>
+                                <option value="0B60">0B60</option>
+                                <option value="0KID">0KID</option>
+                                <option value="0OJM">0OJM</option>
+                                <option value="0PO7">0PO7</option>
+                                <option value="0S50">0S50</option>
+                                <option value="0SH6">0SH6</option>
+                                <option value="0VYC">0VYC</option>
+                                <option value="1AN5">1AN5</option>
+                                <option value="1DT6">1DT6</option>
+                                <option value="1H8Y">1H8Y</option>
+                                <option value="1MB4">1MB4</option>
+                                <option value="1MSV">1MSV</option>
+                                <option value="1NFK">1NFK</option>
+                                <option value="1YKL">1YKL</option>
+                                <option value="2346">2346</option>
+                                <option value="2686">2686</option>
+                                <option value="2A7I">2A7I</option>
+                                <option value="2BE6">2BE6</option>
+                                <option value="2G86">2G86</option>
+                                <option value="2HLT">2HLT</option>
+                                <option value="2JHV">2JHV</option>
+                                <option value="2MBB">2MBB</option>
+                                <option value="2R78">2R78</option>
+                                <option value="2US6">2US6</option>
+                                <option value="2XZ1">2XZ1</option>
+                                <option value="2YAO">2YAO</option>
+                                <option value="31GG">31GG</option>
+                                <option value="31JW">31JW</option>
+                                <option value="374O">374O</option>
+                                <option value="3NHZ">3NHZ</option>
+                                <option value="3X46">3X46</option>
+                                <option value="3YQ1">3YQ1</option>
+                                <option value="44SU">44SU</option>
+                                <option value="4M0E">4M0E</option>
+                                <option value="4W0D">4W0D</option>
+                                <option value="59QM">59QM</option>
+                                <option value="5FPK">5FPK</option>
+                                <option value="5JRZ">5JRZ</option>
+                                <option value="5LNN">5LNN</option>
+                                <option value="5OVC">5OVC</option>
+                                <option value="6E4H">6E4H</option>
+                                <option value="6KYM">6KYM</option>
+                                <option value="6LKA">6LKA</option>
+                                <option value="6PE7">6PE7</option>
+                                <option value="6SKY">6SKY</option>
+                                <option value="6XXU">6XXU</option>
+                                <option value="6YZA">6YZA</option>
+                                <option value="734F">734F</option>
+                                <option value="738L">738L</option>
+                                <option value="73AC">73AC</option>
+                                <option value="74BF">74BF</option>
+                                <option value="7G9M">7G9M</option>
+                                <option value="7KM4">7KM4</option>
+                                <option value="7UDQ">7UDQ</option>
+                                <option value="7UHW">7UHW</option>
+                                <option value="7UWC">7UWC</option>
+                                <option value="820B">820B</option>
+                                <option value="834U">834U</option>
+                                <option value="8HRZ">8HRZ</option>
+                                <option value="8Y24">8Y24</option>
+                                <option value="9B5B">9B5B</option>
+                                <option value="9FA1">9FA1</option>
+                                <option value="9HD1">9HD1</option>
+                                <option value="9IM8">9IM8</option>
+                                <option value="9IP9">9IP9</option>
+                                <option value="A4ZC">A4ZC</option>
+                                <option value="A793">A793</option>
+                                <option value="AIDS">AIDS</option>
+                                <option value="AIIN">AIIN</option>
+                                <option value="APO0">APO0</option>
+                                <option value="AQIB">AQIB</option>
+                                <option value="B3QW">B3QW</option>
+                                <option value="B8W8">B8W8</option>
+                                <option value="BER4">BER4</option>
+                                <option value="BFD1">BFD1</option>
+                                <option value="BP09">BP09</option>
+                                <option value="BPSA">BPSA</option>
+                                <option value="BWBW">BWBW</option>
+                                <option value="BX9E">BX9E</option>
+                                <option value="C1E3">C1E3</option>
+                                <option value="C8F6">C8F6</option>
+                                <option value="CAAV">CAAV</option>
+                                <option value="CEL6">CEL6</option>
+                                <option value="CV2C">CV2C</option>
+                                <option value="CYDC">CYDC</option>
+                                <option value="DD8W">DD8W</option>
+                                <option value="DE5D">DE5D</option>
+                                <option value="DHSN">DHSN</option>
+                                <option value="DPRV">DPRV</option>
+                                <option value="DZRV">DZRV</option>
+                                <option value="E39I">E39I</option>
+                                <option value="E5PF">E5PF</option>
+                                <option value="EE5R">EE5R</option>
+                                <option value="F35Z">F35Z</option>
+                                <option value="F57O">F57O</option>
+                                <option value="FJBW">FJBW</option>
+                                <option value="FLNZ">FLNZ</option>
+                                <option value="FLXH">FLXH</option>
+                                <option value="FSWO">FSWO</option>
+                                <option value="FSXG">FSXG</option>
+                                <option value="GQ0N">GQ0N</option>
+                                <option value="GVZ1">GVZ1</option>
+                                <option value="GWEP">GWEP</option>
+                                <option value="GZA8">GZA8</option>
+                                <option value="H1K7">H1K7</option>
+                                <option value="HAXM">HAXM</option>
+                                <option value="HJF4">HJF4</option>
+                                <option value="HSVE">HSVE</option>
+                                <option value="HTQS">HTQS</option>
+                                <option value="I2OD">I2OD</option>
+                                <option value="I31I">I31I</option>
+                                <option value="IE90">IE90</option>
+                                <option value="IJ01">IJ01</option>
+                                <option value="IMHI">IMHI</option>
+                                <option value="INEJ">INEJ</option>
+                                <option value="IQFS">IQFS</option>
+                                <option value="IUT9">IUT9</option>
+                                <option value="IX8T">IX8T</option>
+                                <option value="IZ77">IZ77</option>
+                                <option value="J9SY">J9SY</option>
+                                <option value="JHU5">JHU5</option>
+                                <option value="JI64">JI64</option>
+                                <option value="JN20">JN20</option>
+                                <option value="JQH3">JQH3</option>
+                                <option value="JS7M">JS7M</option>
+                                <option value="JSAX">JSAX</option>
+                                <option value="JUIP">JUIP</option>
+                                <option value="K0DL">K0DL</option>
+                                <option value="K5GV">K5GV</option>
+                                <option value="K5LB">K5LB</option>
+                                <option value="KBWO">KBWO</option>
+                                <option value="KNVN">KNVN</option>
+                                <option value="KPG9">KPG9</option>
+                                <option value="KUPK">KUPK</option>
+                                <option value="L1P3">L1P3</option>
+                                <option value="L4PL">L4PL</option>
+                                <option value="LAYD">LAYD</option>
+                                <option value="LGTN">LGTN</option>
+                                <option value="LLLH">LLLH</option>
+                                <option value="LQ0W">LQ0W</option>
+                                <option value="M0WG">M0WG</option>
+                                <option value="MEFQ">MEFQ</option>
+                                <option value="MU16">MU16</option>
+                                <option value="N2ZZ">N2ZZ</option>
+                                <option value="N7K2">N7K2</option>
+                                <option value="NDL9">NDL9</option>
+                                <option value="NFJH">NFJH</option>
+                                <option value="NO3L">NO3L</option>
+                                <option value="NQW1">NQW1</option>
+                                <option value="NSJX">NSJX</option>
+                                <option value="NX5Y">NX5Y</option>
+                                <option value="OEH6">OEH6</option>
+                                <option value="OME4">OME4</option>
+                                <option value="ONY7">ONY7</option>
+                                <option value="OPVX">OPVX</option>
+                                <option value="OQMY">OQMY</option>
+                                <option value="OYQF">OYQF</option>
+                                <option value="P2K2">P2K2</option>
+                                <option value="P4MD">P4MD</option>
+                                <option value="PJR4">PJR4</option>
+                                <option value="PKW3">PKW3</option>
+                                <option value="PMAI">PMAI</option>
+                                <option value="PPNK">PPNK</option>
+                                <option value="PSUY">PSUY</option>
+                                <option value="PWCW">PWCW</option>
+                                <option value="Q0LY">Q0LY</option>
+                                <option value="Q231">Q231</option>
+                                <option value="Q2L0">Q2L0</option>
+                                <option value="Q57T">Q57T</option>
+                                <option value="Q6J6">Q6J6</option>
+                                <option value="QJID">QJID</option>
+                                <option value="QQUP">QQUP</option>
+                                <option value="QQVA">QQVA</option>
+                                <option value="QS0L">QS0L</option>
+                                <option value="QX54">QX54</option>
+                                <option value="QZYX">QZYX</option>
+                                <option value="R44Q">R44Q</option>
+                                <option value="R7GL">R7GL</option>
+                                <option value="RE69">RE69</option>
+                                <option value="RF6M">RF6M</option>
+                                <option value="RH2K">RH2K</option>
+                                <option value="RM3L">RM3L</option>
+                                <option value="RSN9">RSN9</option>
+                                <option value="RUFT">RUFT</option>
+                                <option value="RXV3">RXV3</option>
+                                <option value="RY9B">RY9B</option>
+                                <option value="S96O">S96O</option>
+                                <option value="S9KU">S9KU</option>
+                                <option value="SF1X">SF1X</option>
+                                <option value="SS6D">SS6D</option>
+                                <option value="SST3">SST3</option>
+                                <option value="SSTX">SSTX</option>
+                                <option value="T6AB">T6AB</option>
+                                <option value="TUN1">TUN1</option>
+                                <option value="U37O">U37O</option>
+                                <option value="U9RX">U9RX</option>
+                                <option value="UBBX">UBBX</option>
+                                <option value="UC7E">UC7E</option>
+                                <option value="UJ5T">UJ5T</option>
+                                <option value="URYD">URYD</option>
+                                <option value="UYDZ">UYDZ</option>
+                                <option value="V4XX">V4XX</option>
+                                <option value="VREH">VREH</option>
+                                <option value="VVTC">VVTC</option>
+                                <option value="VYSA">VYSA</option>
+                                <option value="VZN9">VZN9</option>
+                                <option value="W1X2">W1X2</option>
+                                <option value="W3Y9">W3Y9</option>
+                                <option value="W3ZV">W3ZV</option>
+                                <option value="WE0G">WE0G</option>
+                                <option value="WE7U">WE7U</option>
+                                <option value="WIWP">WIWP</option>
+                                <option value="WMTK">WMTK</option>
+                                <option value="WSID">WSID</option>
+                                <option value="WSRG">WSRG</option>
+                                <option value="WV7U">WV7U</option>
+                                <option value="WVQF">WVQF</option>
+                                <option value="X1JO">X1JO</option>
+                                <option value="XC1N">XC1N</option>
+                                <option value="XHJD">XHJD</option>
+                                <option value="XVMH">XVMH</option>
+                                <option value="Y1WG">Y1WG</option>
+                                <option value="Y7G1">Y7G1</option>
+                                <option value="YJXM">YJXM</option>
+                                <option value="YMGT">YMGT</option>
+                                <option value="YX47">YX47</option>
+                                <option value="Z7PM">Z7PM</option>
+                                <option value="ZA1S">ZA1S</option>
+                                <option value="ZCQR">ZCQR</option>
+                                <option value="ZHC2">ZHC2</option>
+                                <option value="ZKQ3">ZKQ3</option>
+                                <option value="ZWPL">ZWPL</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="occupation_category_code" class="form-label">Catégorie profession</label>
+                            <select class="form-select" id="occupation_category_code" name="occupation_category_code" required>
+                                <option value="">Sélectionner</option>
+                                <option value="56SI">56SI</option>
+                                <option value="90QI">90QI</option>
+                                <option value="AHH5">AHH5</option>
+                                <option value="JD7X">JD7X</option>
+                                <option value="L44T">L44T</option>
+                                <option value="T4MS">T4MS</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bouton soumettre -->
+                <div class="form-section">
+                    <button type="submit" class="btn btn-submit">
+                        Obtenir les recommandations
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <p class="footer-text">
+            Système de recommandation d'assurance
+        </p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -469,14 +521,23 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Initialize Select2 for searchable dropdowns
+            // Select2 pour les champs recherchables
             $('.searchable').select2({
-                placeholder: '-- Rechercher --',
+                placeholder: 'Rechercher...',
                 allowClear: true
             });
 
-            // Set default date to today
+            // Date par défaut : aujourd'hui
             document.getElementById('join_date').valueAsDate = new Date();
+
+            // Gestion visuelle des options de modèle
+            const modelOptions = document.querySelectorAll('.model-option');
+            modelOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    modelOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
         });
     </script>
 </body>

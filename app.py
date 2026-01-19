@@ -1,14 +1,10 @@
 import pickle
-import sys
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import numpy as np
 
-# Add scripts directory to path
-sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-
-from preprocessing import preprocess, PRODUCT_COLUMNS, CATEGORICAL_COLUMNS, NUMERICAL_COLUMNS
+from scripts.preprocessing import preprocess, PRODUCT_COLUMNS, CATEGORICAL_COLUMNS, NUMERICAL_COLUMNS
 
 try:
     import tensorflow as tf
