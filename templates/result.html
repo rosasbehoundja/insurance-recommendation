@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats - Recommandation d'assurance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 40px 0;
+            color: #333;
+        }
+        .container-main {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .card-section {
+            padding: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .card-section:last-child {
+            border-bottom: none;
+        }
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+        .model-badge {
+            display: inline-block;
+            background: #f0fdf4;
+            color: #22c55e;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .user-info-item {
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .user-info-item label {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .user-info-item span {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        .summary-box {
+            text-align: center;
+            padding: 24px;
+            background: #f0fdf4;
+            border-radius: 8px;
+        }
+        .summary-number {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #22c55e;
+        }
+        .summary-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .product-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            margin: 4px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .product-recommended {
+            background: #22c55e;
+            color: white;
+        }
+        .product-not-recommended {
+            background: #f5f5f5;
+            color: #999;
+        }
+        .table {
+            font-size: 0.9rem;
+        }
+        .table th {
+            font-weight: 500;
+            color: #555;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status-yes {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+        .status-no {
+            background: #f5f5f5;
+            color: #999;
+        }
+        .btn-back {
+            background: #22c55e;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+        .btn-back:hover {
+            background: #16a34a;
+            color: white;
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            color: #999;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 768px) {
+            .user-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container container-main">
+        <div class="page-header">
+            <h1>Résultats de la prédiction</h1>
+            <p>Voici les produits d'assurance recommandés pour ce profil</p>
+        </div>
+
+        <div class="card">
+            <!-- Modèle utilisé -->
+            <div class="card-section text-center">
+                <span class="model-badge">
+                    {% if model_name == 'deep_learning' %}
+                    Deep learning
+                    {% else %}
+                    XGBoost
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Infos client -->
+            <div class="card-section">
+                <div class="section-title">Informations client</div>
+                <div class="user-info-grid">
+                    <div class="user-info-item">
+                        <label>Identifiant</label>
+                        <span>{{ user_data['ID'][0] }}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <label>Date d'adhésion</label>
+                        <span>{{ user_data['join_date'][0] }}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <label>Sexe</label>
+                        <span>{{ user_data['sex'][0] }}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <label>Statut marital</label>
+                        <span>{{ user_data['marital_status'][0] }}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <label>Année de naissance</label>
+                        <span>{{ user_data['birth_year'][0] }}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <label>Code agence</label>
+                        <span>{{ user_data['branch_code'][0] }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Résumé -->
+            <div class="card-section">
+                <div class="summary-box">
+                    <div class="summary-number">{{ recommended|length }}</div>
+                    <div class="summary-text">produit(s) recommandé(s) sur 21</div>
+                </div>
+            </div>
+
+            <!-- Produits recommandés -->
+            {% if recommended %}
+            <div class="card-section">
+                <div class="section-title">Produits recommandés</div>
+                <div>
+                    {% for product in recommended %}
+                    <span class="product-badge product-recommended">{{ product }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card-section">
+                <p class="text-center text-muted mb-0">Aucun produit spécifique recommandé pour ce profil.</p>
+            </div>
+            {% endif %}
+
+            <!-- Détail par produit -->
+            <div class="card-section">
+                <div class="section-title">Détail par produit</div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Code produit</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product, value in predictions.items() %}
+                            <tr>
+                                <td><strong>{{ product }}</strong></td>
+                                <td>
+                                    {% if value == 1 %}
+                                    <span class="status-badge status-yes">recommandé</span>
+                                    {% else %}
+                                    <span class="status-badge status-no">non recommandé</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bouton retour -->
+            <div class="card-section text-center">
+                <a href="/" class="btn-back">
+                    ← Nouvelle prédiction
+                </a>
+            </div>
+        </div>
+
+        <p class="footer-text">
+            Système de recommandation d'assurance
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
