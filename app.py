@@ -4,6 +4,7 @@ from pathlib import Path
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import numpy as np
+import os
 
 from scripts.preprocessing import preprocess, PRODUCT_COLUMNS, CATEGORICAL_COLUMNS, NUMERICAL_COLUMNS
 from retrain import retrain_models, run_scheduled
@@ -11,10 +12,16 @@ from retrain import retrain_models, run_scheduled
 scheduled_thread = None
 stop_scheduled = threading.Event()
 
-try:
-    import tensorflow as tf
-    TF_AVAILABLE = True
-except ImportError:
+DISABLE_TF = os.environ.get('DISABLE_TF', 'false').lower() == 'true'
+
+if not DISABLE_TF:
+    try:
+        import tensorflow as tf
+        TF_AVAILABLE = True
+    except ImportError:
+        tf = None
+        TF_AVAILABLE = False
+else:
     tf = None
     TF_AVAILABLE = False
 
@@ -169,7 +176,7 @@ def make_prediction(df, model_name="xgboost"):
     df_processed = preprocess(df.copy())
 
     # Load model and scaler
-    if model_name == "deep_learning":
+    if model_name == "deep_learning" and TF_AVAILABLE:
         model = load_deep_learning_model(WEIGHTS_DIR / "deep_learning.keras")
         _, encoder, scaler = load_sklearn_model(WEIGHTS_DIR / "xgboost.pkl")
     else:
@@ -384,5 +391,5 @@ def api_retrain_status():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
 
